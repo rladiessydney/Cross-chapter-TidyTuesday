@@ -1,0 +1,67 @@
+---
+title: "Data explore"
+format: html
+editor: source
+---
+
+## Cross chapter TT 
+
+### Some useful R packages for TT
+
+```{r}
+# install.packages("tidytuesdayR")
+# install.packages("here")
+# install.packages("tidyverse")
+# install.packages("janitor")
+
+library(tidytuesdayR) # For loading TT weekly releases into R
+library(here) # For pain-free project directory navigation 
+library(tidyverse) # A data scientist's toolbelt for wrangling and visualising your data
+library(skimr) # Get a sense of your data
+library(janitor) # For cleaning data
+```
+
+### Load data
+
+TT data is released weekly (Wednesday in Australia) at this [repository](https://github.com/rfordatascience/tidytuesday) 
+
+We will be wrangling with data from 2025-04-29 featuring the useR! 2025 program. useR! is a data science conference that brings together R users, developers, and enthusiasts from around the world for three days of tutorials, presentations, and networking. For more info, check out the [README](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-04-29/readme.md) for the datasest
+
+```{r}
+# Load data using the tidytuesdayR package by providing the date the data was released
+tt_data <- tt_load("2025-04-29")
+
+# Printing the tt_data object will give you a quick overview of the data
+tt_data
+
+# The data is stored in the element `user2025`
+user_data <- tt_data$user2025
+user_data
+```
+
+### Get a sense of the data
+
+Lots of categorical variables
+
+```{r}
+glimpse(user_data)
+skim(user_data)
+```
+
+### Idea: What are the major keywords and how many talks have used them? 
+
+This will be a lot of string wrangling! 
+
+```{r}
+# Create a list column
+user_data <- user_data |> 
+  mutate(keywords_vec = str_split(keywords, ","))
+
+# Pivot long this list with some variables I want
+user_subset <- user_data |> 
+  select(session:title, speakers, keywords_vec) |> 
+  unnest(keywords_vec)
+
+
+```
+
